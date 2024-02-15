@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+// import { getMonth } from "../../helpers/Date";
 
 const DataContext = createContext({});
 
@@ -30,13 +31,20 @@ export const DataProvider = ({ children }) => {
     if (data) return;
     getData();
   });
-  
+  const events = data?.events;
+  // console.log(events);
+  const lastDate = events?.reduce((prev, current) =>
+    new Date(prev.date) < new Date(current.date) ? current : prev
+  );
+  // console.log(lastDate);
+
   return (
     <DataContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         data,
         error,
+        last: lastDate,
       }}
     >
       {children}
@@ -46,7 +54,7 @@ export const DataProvider = ({ children }) => {
 
 DataProvider.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
 export const useData = () => useContext(DataContext);
 
